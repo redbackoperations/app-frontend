@@ -1,7 +1,14 @@
+// ignore_for_file: avoid_print
+
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:redback_mobile_app/screens/signUp.dart';
+import 'package:http/http.dart' as http;
 
 class Login extends StatefulWidget {
+  const Login({Key? key}) : super(key: key);
+
   @override
   _LoginState createState() => _LoginState();
 }
@@ -9,12 +16,33 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   // our form key
   final _formKey = GlobalKey<FormState>();
+  final userNameEditingController = new TextEditingController();
+  final passwordEditingController = new TextEditingController();
+
+  late var userNameField;
+  late var passwordField;
+
+  var client = http.Client();
+
+  Future<void> getData() async {
+    try {
+      var response = await client.get(Uri.parse('http://10.0.2.2:8080/user'));
+      if (response.statusCode == 200) {
+        print(
+            "successfully retrieved user but need to handle the data to match the given username and password");
+      }
+      //print(response.body);
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     // username field
-    final userNameField = TextFormField(
+    userNameField = TextFormField(
         autofocus: false,
+        controller: userNameEditingController,
         keyboardType: TextInputType.name,
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
@@ -29,11 +57,12 @@ class _LoginState extends State<Login> {
         ));
 
     //password field
-    final passwordField = TextFormField(
+    passwordField = TextFormField(
         autofocus: false,
+        controller: passwordEditingController,
         obscureText: true,
         textInputAction: TextInputAction.next,
-        style: TextStyle(color: const Color(0xFFe87461)),
+        style: const TextStyle(color: Color(0xFFe87461)),
         decoration: InputDecoration(
           fillColor: const Color(0xFFe87461),
           filled: true,
@@ -45,7 +74,7 @@ class _LoginState extends State<Login> {
           ),
         ));
 
-    //signup button
+    //login button
     final logInButton = Material(
       elevation: 5,
       borderRadius: BorderRadius.circular(30),
@@ -53,7 +82,7 @@ class _LoginState extends State<Login> {
       child: MaterialButton(
           padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
           minWidth: MediaQuery.of(context).size.width,
-          onPressed: () {},
+          onPressed: getData,
           child: const Text(
             "Log In",
             textAlign: TextAlign.center,
@@ -137,11 +166,11 @@ class _LoginState extends State<Login> {
                                       builder: (context) =>
                                           const RegistrationScreen()));
                             },
-                            child: Text(
+                            child: const Text(
                               "Sign Up",
                               style: TextStyle(
                                   decoration: TextDecoration.underline,
-                                  color: const Color(0xFFe87461),
+                                  color: Color(0xFFe87461),
                                   fontWeight: FontWeight.bold,
                                   fontSize: 15),
                             ),

@@ -1,4 +1,9 @@
+// ignore_for_file: prefer_typing_uninitialized_variables, avoid_print
+
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({Key? key}) : super(key: key);
@@ -10,13 +15,87 @@ class RegistrationScreen extends StatefulWidget {
 class _RegistrationScreenState extends State<RegistrationScreen> {
   // our form key
   final _formKey = GlobalKey<FormState>();
+  //here we declare the field variables that will be used in the signup
+  late var firstNameField;
+  late var secondNameField;
+  late var emailField;
+  late var passwordField;
+  late var userNameField;
+  late var mobileField;
+  late var emptyfollowers = '';
+  late var emptyfollowing = '';
+  late var emptyimg = '';
+
+  //below are our text editing controllers for each field
+  final firstNameEditingController = new TextEditingController();
+  final secondNameEditingController = new TextEditingController();
+  final emailEditingController = new TextEditingController();
+  final passwordEditingController = new TextEditingController();
+  final confirmPasswordEditingController = new TextEditingController();
+  final userNameEditingController = new TextEditingController();
+  final mobileNumberEditingController = new TextEditingController();
+
+  //creating a http client that can use the different api requests
+  var client = http.Client();
+
+  //This function makes a post request to the server and signup endpoint and passes a
+  //body of values taken from the signup form
+  Future<void> postData() async {
+    // var test = jsonEncode({
+    //   "username": userNameEditingController.text,
+    //   "firstname": firstNameEditingController.text,
+    //   "lastname": secondNameEditingController.text,
+    //   "email": emailEditingController.text,
+    //   "password": passwordEditingController.text,
+    //   "redbackCoins": 0,
+    //   "telephone": int.parse(mobileNumberEditingController.text),
+    //   "userLevel": 0,
+    //   "followers": "",
+    //   "following": "",
+    //   //"__v": 0.toString(),
+    //   "img": ""
+    // });
+    // print(test);
+    try {
+      var response = await client.post(Uri.parse('http://10.0.2.2:8080/signup'),
+          headers: {"Content-Type": "application/json; charset=utf-8"},
+          body: jsonEncode({
+            "username": userNameEditingController.text,
+            "firstname": firstNameEditingController.text,
+            "lastname": secondNameEditingController.text,
+            "email": emailEditingController.text,
+            "password": passwordEditingController.text,
+            "redbackCoins": 0,
+            "telephone": int.parse(mobileNumberEditingController.text),
+            "userLevel": 0,
+            "followers": "",
+            "following": "",
+            "img": ""
+          }));
+      print(response.body);
+      client.close();
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     //first name field
-    final firstNameField = TextFormField(
+    firstNameField = TextFormField(
         autofocus: false,
+        controller: firstNameEditingController,
         keyboardType: TextInputType.name,
+        validator: (value) {
+          RegExp regex = new RegExp(r'^.{3,}$');
+          if (value!.isEmpty) {
+            return ("First Name cannot be Empty");
+          }
+          if (!regex.hasMatch(value)) {
+            return ("Enter Valid name(Min. 3 Character)");
+          }
+          return null;
+        },
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
           fillColor: const Color(0xFFe87461),
@@ -30,9 +109,20 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         ));
 
     //last name field
-    final secondNameField = TextFormField(
+    secondNameField = TextFormField(
         autofocus: false,
+        controller: secondNameEditingController,
         keyboardType: TextInputType.name,
+        validator: (value) {
+          RegExp regex = new RegExp(r'^.{3,}$');
+          if (value!.isEmpty) {
+            return ("Last Name cannot be Empty");
+          }
+          if (!regex.hasMatch(value)) {
+            return ("Enter Valid name(Min. 3 Character)");
+          }
+          return null;
+        },
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
           fillColor: const Color(0xFFe87461),
@@ -46,9 +136,21 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         ));
 
     //email field
-    final emailField = TextFormField(
+    emailField = TextFormField(
         autofocus: false,
+        controller: emailEditingController,
         keyboardType: TextInputType.emailAddress,
+        validator: (value) {
+          if (value!.isEmpty) {
+            return ("Please Enter Your Email");
+          }
+          // reg expression for email validation
+          if (!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]")
+              .hasMatch(value)) {
+            return ("Please Enter a valid email");
+          }
+          return null;
+        },
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
           fillColor: const Color(0xFFe87461),
@@ -62,10 +164,20 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         ));
 
     //password field
-    final passwordField = TextFormField(
+    passwordField = TextFormField(
         autofocus: false,
+        controller: passwordEditingController,
         obscureText: true,
         textInputAction: TextInputAction.next,
+        validator: (value) {
+          RegExp regex = new RegExp(r'^.{6,}$');
+          if (value!.isEmpty) {
+            return ("Password is required for login");
+          }
+          if (!regex.hasMatch(value)) {
+            return ("Enter Valid Password(Min. 6 Character)");
+          }
+        },
         decoration: InputDecoration(
           fillColor: const Color(0xFFe87461),
           filled: true,
@@ -80,7 +192,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     //confirm password field
     final confirmPasswordField = TextFormField(
         autofocus: false,
+        controller: confirmPasswordEditingController,
         textInputAction: TextInputAction.done,
+        obscureText: true,
+        validator: (value) {
+          if (confirmPasswordEditingController.text !=
+              passwordEditingController.text) {
+            return "Password don't match";
+          }
+          return null;
+        },
         decoration: InputDecoration(
           fillColor: const Color(0xFFe87461),
           filled: true,
@@ -93,10 +214,21 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ),
         ));
 
-    //last name field
-    final UserNameField = TextFormField(
+    //username field
+    userNameField = TextFormField(
         autofocus: false,
+        controller: userNameEditingController,
         keyboardType: TextInputType.name,
+        validator: (value) {
+          RegExp regex = new RegExp(r'^.{3,}$');
+          if (value!.isEmpty) {
+            return ("First Name cannot be Empty");
+          }
+          if (!regex.hasMatch(value)) {
+            return ("Enter Valid name(Min. 3 Character)");
+          }
+          return null;
+        },
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
           fillColor: const Color(0xFFe87461),
@@ -109,9 +241,21 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ),
         ));
 
-    final mobileField = TextFormField(
+    //phone number field
+    mobileField = TextFormField(
         autofocus: false,
+        controller: mobileNumberEditingController,
         keyboardType: TextInputType.number,
+        validator: (value) {
+          RegExp regex = RegExp(r'^(?:[+0]9)?[0-9]{10}$');
+          if (value!.isEmpty) {
+            return ("Mobile number cannot be Empty");
+          }
+          if (!regex.hasMatch(value)) {
+            return ("Enter Valid number");
+          }
+          return null;
+        },
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
           fillColor: const Color(0xFFe87461),
@@ -132,7 +276,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       child: MaterialButton(
           padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
           minWidth: MediaQuery.of(context).size.width,
-          onPressed: () {},
+          //calls the function to post data to database
+          onPressed: postData,
           child: const Text(
             "Sign Up",
             textAlign: TextAlign.center,
@@ -188,7 +333,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     const SizedBox(height: 20),
                     confirmPasswordField,
                     const SizedBox(height: 20),
-                    UserNameField,
+                    userNameField,
                     const SizedBox(height: 20),
                     mobileField,
                     const SizedBox(height: 20),
