@@ -86,6 +86,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         autofocus: false,
         controller: firstNameEditingController,
         keyboardType: TextInputType.name,
+        validator: (value) {
+          RegExp regex = new RegExp(r'^.{3,}$');
+          if (value!.isEmpty) {
+            return ("First Name cannot be Empty");
+          }
+          if (!regex.hasMatch(value)) {
+            return ("Enter Valid name(Min. 3 Character)");
+          }
+          return null;
+        },
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
           fillColor: const Color(0xFFe87461),
@@ -103,6 +113,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         autofocus: false,
         controller: secondNameEditingController,
         keyboardType: TextInputType.name,
+        validator: (value) {
+          RegExp regex = new RegExp(r'^.{3,}$');
+          if (value!.isEmpty) {
+            return ("Last Name cannot be Empty");
+          }
+          if (!regex.hasMatch(value)) {
+            return ("Enter Valid name(Min. 3 Character)");
+          }
+          return null;
+        },
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
           fillColor: const Color(0xFFe87461),
@@ -120,6 +140,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         autofocus: false,
         controller: emailEditingController,
         keyboardType: TextInputType.emailAddress,
+        validator: (value) {
+          if (value!.isEmpty) {
+            return ("Please Enter Your Email");
+          }
+          // reg expression for email validation
+          if (!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]")
+              .hasMatch(value)) {
+            return ("Please Enter a valid email");
+          }
+          return null;
+        },
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
           fillColor: const Color(0xFFe87461),
@@ -138,6 +169,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         controller: passwordEditingController,
         obscureText: true,
         textInputAction: TextInputAction.next,
+        validator: (value) {
+          RegExp regex = new RegExp(r'^.{6,}$');
+          if (value!.isEmpty) {
+            return ("Password is required for login");
+          }
+          if (!regex.hasMatch(value)) {
+            return ("Enter Valid Password(Min. 6 Character)");
+          }
+        },
         decoration: InputDecoration(
           fillColor: const Color(0xFFe87461),
           filled: true,
@@ -154,6 +194,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         autofocus: false,
         controller: confirmPasswordEditingController,
         textInputAction: TextInputAction.done,
+        obscureText: true,
+        validator: (value) {
+          if (confirmPasswordEditingController.text !=
+              passwordEditingController.text) {
+            return "Password don't match";
+          }
+          return null;
+        },
         decoration: InputDecoration(
           fillColor: const Color(0xFFe87461),
           filled: true,
@@ -171,6 +219,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         autofocus: false,
         controller: userNameEditingController,
         keyboardType: TextInputType.name,
+        validator: (value) {
+          RegExp regex = new RegExp(r'^.{3,}$');
+          if (value!.isEmpty) {
+            return ("First Name cannot be Empty");
+          }
+          if (!regex.hasMatch(value)) {
+            return ("Enter Valid name(Min. 3 Character)");
+          }
+          return null;
+        },
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
           fillColor: const Color(0xFFe87461),
@@ -188,6 +246,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         autofocus: false,
         controller: mobileNumberEditingController,
         keyboardType: TextInputType.number,
+        validator: (value) {
+          RegExp regex = RegExp(r'^(?:[+0]9)?[0-9]{10}$');
+          if (value!.isEmpty) {
+            return ("Mobile number cannot be Empty");
+          }
+          if (!regex.hasMatch(value)) {
+            return ("Enter Valid number");
+          }
+          return null;
+        },
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
           fillColor: const Color(0xFFe87461),
